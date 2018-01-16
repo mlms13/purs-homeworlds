@@ -2,17 +2,16 @@ module Data.Bank
   ( Bank
   , has
   , hasColor
-  , hasPiece
   , takePiece
   ) where
 
 import Data.ActionValidation (ActionError(..))
 import Data.Either (Either(..))
-import Data.Foldable (any, elem)
+import Data.Foldable (any, elem, foldl)
 import Data.GamePiece (Color, GamePiece, Size, getColor, getSize)
-import Data.List (List, filter)
-import Data.Tuple (Tuple(..))
-import Prelude (map, ($), (&&), (/=), (<<<), (==))
+import Data.List (List(Nil), (:))
+import Data.Tuple (Tuple(..), fst, snd)
+import Prelude (map, ($), (&&), (<<<), (==))
 
 type Bank = List GamePiece
 
@@ -34,9 +33,16 @@ hasPiece = elem
 -- the updated bank, or an error if the piece isn't in the bank
 takePiece :: GamePiece -> Bank -> Either ActionError (Tuple GamePiece Bank)
 takePiece gp bank =
-  -- let filtered = filter ((/=) gp) bank
-  -- in
-  if hasPiece gp bank then
-    Right $ Tuple gp $ filter ((/=) gp) bank
-  else
-    Left $ PieceNotInBank gp
+  let
+    withoutOne = foldl f (Tuple Nil true) bank
+    pred = (==) gp
+    f (Tuple list shouldFilter) piece =
+      if pred piece && shouldFilter then
+        Tuple list false
+      else
+        Tuple (piece : list) shouldFilter
+  in
+  case snd withoutOne of
+    false -> Right $ Tuple gp $ fst withoutOne
+    true -> Left $ PieceNotInBank gp
+

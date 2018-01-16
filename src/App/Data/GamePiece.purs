@@ -4,20 +4,19 @@ module Data.GamePiece
   , Ship
   , Color(..)
   , Size(..)
-  , PieceIndex(..)
   , all
   , getColor
   , getSize
+  , gamepiece
   ) where
 
-import Control.Apply (lift3)
+import Control.Apply (lift2)
 import Data.List (List(..), (:))
-import Prelude (class Eq, class Show, (&&), (==))
+import Prelude (class Eq, class Show, (&&), (<>), (==))
 
 newtype GamePiece = GamePiece
   { color :: Color
   , size :: Size
-  , index :: PieceIndex
   }
 
 type Star = GamePiece
@@ -31,11 +30,11 @@ getSize (GamePiece { size }) = size
 
 instance gamePieceEq  :: Eq GamePiece where
   eq (GamePiece a) (GamePiece b) =
-    a.color == b.color && a.size == b.size && a.index == b.index
+    a.color == b.color && a.size == b.size
 
-gamepiece :: Color -> Size -> PieceIndex -> GamePiece
-gamepiece color size index = GamePiece
-  { color, size, index }
+gamepiece :: Color -> Size -> GamePiece
+gamepiece color size = GamePiece
+  { color, size }
 
 data Color
   = Red
@@ -61,12 +60,6 @@ instance showSize :: Show Size where
   show Medium = "medium"
   show Small = "small"
 
-data PieceIndex
-  = One
-  | Two
-  | Three
-
-derive instance indexEq :: Eq PieceIndex
 
 -- Create three copies of each combination of `Color` and `Size`
 all :: List GamePiece
@@ -74,6 +67,6 @@ all =
   let
     colors = Yellow : Green : Blue : Red : Nil
     sizes = Small : Medium : Large : Nil
-    indexes = One : Two : Three : Nil
+    oneCopy = lift2 gamepiece colors sizes
   in
-    lift3 gamepiece colors sizes indexes
+    oneCopy <> oneCopy <> oneCopy

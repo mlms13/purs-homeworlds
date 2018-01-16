@@ -1,13 +1,15 @@
 module View.Component.Bank (view) where
 
+import App.Events (Event(..))
 import Data.Bank (Bank)
 import Data.Foldable (foldl)
-import Data.GamePiece (Color(..), GamePiece(..), Size(..))
-import Prelude (discard, show, ($), (+))
+import Data.GamePiece (Color(..), GamePiece(..), Size(..), gamepiece)
+import Prelude (const, discard, show, ($), (+))
+import Pux.DOM.Events (onClick)
 import Pux.DOM.HTML (HTML)
 import Text.Smolder.HTML (div, span)
 import Text.Smolder.HTML.Attributes (className)
-import Text.Smolder.Markup (text, (!))
+import Text.Smolder.Markup (text, (!), (#!))
 import View.Component.GamePiece as Piece
 
 type GroupedPieces =
@@ -53,11 +55,11 @@ groupPieces bank =
                  Small -> red { small = red.small + 1 }
                }
 
-view :: ∀ a. Bank -> HTML a
+view :: Bank -> HTML Event
 view bank =
   div ! className "bh-bank" $ viewGrouped (groupPieces bank)
 
-viewGrouped :: ∀ a. GroupedPieces -> HTML a
+viewGrouped :: GroupedPieces -> HTML Event
 viewGrouped { green, yellow, blue, red} =
   do
     div ! className "bh-bank-color-row" $ do
@@ -77,8 +79,11 @@ viewGrouped { green, yellow, blue, red} =
       viewBankPiece red.med Red Medium
       viewBankPiece red.small Red Small
 
-viewBankPiece :: ∀ a. Int -> Color -> Size -> HTML a
+viewBankPiece :: Int -> Color -> Size -> HTML Event
 viewBankPiece count color size =
-  div ! className "bh-bank-piece" $ do
-    Piece.view color size
-    span ! className "bh-bank-count" $ text (show count)
+  div
+    ! className "bh-bank-piece"
+    #! onClick (const $ ChoosePiece $ gamepiece color size)
+    $ do
+      Piece.view color size
+      span ! className "bh-bank-count" $ text (show count)

@@ -3,7 +3,7 @@ module App.View.Layout where
 import App.Events (Event)
 import App.State (State(..))
 import App.View.Homepage as Homepage
-import CSS (CSS, alignItems, backgroundColor, borderRadius, color, display, flex, fontSize, fromString, inlineBlock, key, marginTop, padding, px, rgba, value, (?))
+import CSS (CSS, alignItems, backgroundColor, block, borderRadius, color, display, flex, fontSize, fromString, inlineBlock, key, marginTop, padding, px, rgba, value, (?))
 import CSS.Common (baseline)
 import CSS.Text (textDecoration, noneTextDecoration, letterSpacing)
 import CSS.Text.Transform (textTransform, uppercase)
@@ -61,6 +61,7 @@ css = do
     backgroundColor $ rgba 255 255 255 0.2
 
   fromString ".bh-bank-count" ? do
+    display block
     marginTop (4.0 #px)
 
   GpCSS.css
