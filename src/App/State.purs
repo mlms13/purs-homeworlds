@@ -1,20 +1,16 @@
 module App.State where
 
-import App.Config (config)
-import App.Routes (Route, match)
+import Data.Game (Game(..), SetupState(..))
+import Data.GamePiece (all)
 import Data.Newtype (class Newtype)
 
 newtype State = State
-  { title :: String
-  , route :: Route
-  , loaded :: Boolean
+  { game :: Game
   }
 
 derive instance newtypeState :: Newtype State _
 
 init :: String -> State
 init url = State
-  { title: config.title
-  , route: match url
-  , loaded: false
+  { game: Setup all AChoosingPrimary
   }

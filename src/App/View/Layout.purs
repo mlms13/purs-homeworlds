@@ -1,15 +1,13 @@
 module App.View.Layout where
 
-import App.View.Homepage as Homepage
-import App.View.NotFound as NotFound
-import App.Routes (Route(NotFound, Home))
-import App.State (State(..))
 import App.Events (Event)
-import CSS (CSS, fromString, (?), fontSize, display, inlineBlock, marginTop, marginRight, marginLeft, px, value, key, color, backgroundColor, padding, borderRadius)
-import CSS.Border (border, solid)
-import CSS.TextAlign (center, textAlign)
+import App.State (State(..))
+import App.View.Homepage as Homepage
+import CSS (CSS, alignItems, backgroundColor, borderRadius, color, display, flex, fontSize, fromString, inlineBlock, key, marginTop, padding, px, rgba, value, (?))
+import CSS.Common (baseline)
 import CSS.Text (textDecoration, noneTextDecoration, letterSpacing)
 import CSS.Text.Transform (textTransform, uppercase)
+import CSS.TextAlign (center, textAlign)
 import Color (rgb)
 import Control.Bind (discard)
 import Data.Function (($), (#))
@@ -17,15 +15,13 @@ import Pux.DOM.HTML (HTML, style)
 import Text.Smolder.HTML (div)
 import Text.Smolder.HTML.Attributes (className)
 import Text.Smolder.Markup ((!))
+import View.CSS.GamePiece as GpCSS
 
 view :: State -> HTML Event
 view (State st) =
   div ! className "app" $ do
     style css
-
-    case st.route of
-      (Home) -> Homepage.view (State st)
-      (NotFound url) -> NotFound.view (State st)
+    Homepage.view (State st)
 
 css :: CSS
 css = do
@@ -51,20 +47,20 @@ css = do
     padding (6.0 #px) (6.0 #px) (6.0 #px) (6.0 #px)
     textDecoration noneTextDecoration
 
-  fromString ".guide" ? do
-    border solid (2.0 #px) green
-    color green
-    marginRight (10.0 #px)
+  fromString ".bh-bank-color-row" ? do
+    display flex
+    alignItems baseline
 
-  fromString ".guide:hover" ? do
-    backgroundColor green
-    color white
+  fromString ".bh-bank-piece" ? do
+    key (fromString "cursor") (value "pointer")
+    borderRadius (3.0 #px) (3.0 #px) (3.0 #px) (3.0 #px)
+    padding (15.0 #px) (15.0 #px) (15.0 #px) (15.0 #px)
+    key (fromString "transition") (value "0.3s background-color")
 
-  fromString ".github" ? do
-    border solid (2.0 #px) blue
-    color blue
-    marginLeft (10.0 #px)
+  fromString ".bh-bank-piece:hover" ? do
+    backgroundColor $ rgba 255 255 255 0.2
 
-  fromString ".github:hover" ? do
-    backgroundColor blue
-    color white
+  fromString ".bh-bank-count" ? do
+    marginTop (4.0 #px)
+
+  GpCSS.css

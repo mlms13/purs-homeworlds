@@ -12,7 +12,7 @@ module Data.GamePiece
 
 import Control.Apply (lift3)
 import Data.List (List(..), (:))
-import Prelude (class Eq, (&&), (==))
+import Prelude (class Eq, class Show, (&&), (==))
 
 newtype GamePiece = GamePiece
   { color :: Color
@@ -44,6 +44,11 @@ data Color
   | Blue
 
 derive instance colorEq :: Eq Color
+instance showColor :: Show Color where
+  show Red = "red"
+  show Yellow = "yellow"
+  show Green = "green"
+  show Blue = "blue"
 
 data Size
   = Large
@@ -51,6 +56,10 @@ data Size
   | Small
 
 derive instance sizeEq :: Eq Size
+instance showSize :: Show Size where
+  show Large = "large"
+  show Medium = "medium"
+  show Small = "small"
 
 data PieceIndex
   = One

@@ -1,4 +1,7 @@
-module ActionValidation where
+module Data.ActionValidation
+  ( ActionValidation(..)
+  , ActionError(..)
+  ) where
 
 import Data.GamePiece (Color, GamePiece, Size, Ship)
 import Data.List (List, singleton)

@@ -1,41 +1,49 @@
 module Data.StarSystem where
 
-import ActionValidation (ActionError(..), ActionValidation(..))
+import Data.ActionValidation (ActionError(..), ActionValidation(..))
 import Data.GamePiece (GamePiece, Star, Ship, Color, getColor)
 import Data.List (List(Nil), elem, (:))
 import Data.Maybe (Maybe(..), maybe)
 import Data.NonEmpty (NonEmpty(..), fromNonEmpty, oneOf, singleton)
 import Data.Player (Player(..))
 import Data.Tuple (Tuple(..))
-import Prelude (append, map, ($), (<<<))
+import Prelude (class Eq, append, map, ($), (<<<))
 
 data StarSystem
   = Single SingleSystem
   | Binary BinarySystem
+
+derive instance eqStarSystem :: Eq StarSystem
 
 data ShipsAtStar
   = PlayerA (NonEmpty List Ship)
   | PlayerB (NonEmpty List Ship)
   | AAndB (NonEmpty List Ship) (NonEmpty List Ship)
 
-type SingleSystem =
+derive instance eqShipsAtStar :: Eq ShipsAtStar
+
+newtype SingleSystem = SingleSystem
   { star :: GamePiece
   , ships :: ShipsAtStar
   }
 
-type BinarySystem =
+derive instance eqSingleSystem :: Eq SingleSystem
+
+newtype BinarySystem = BinarySystem
   { primary :: Star
   , secondary :: Star
   , ships :: ShipsAtStar
   }
 
+derive instance eqBinarySystem :: Eq BinarySystem
+
 singleSystem :: Star -> ShipsAtStar -> SingleSystem
 singleSystem star ships =
-  { star, ships }
+  SingleSystem { star, ships }
 
 binarySystem :: Star -> Star -> ShipsAtStar -> BinarySystem
 binarySystem primary secondary ships =
-  { primary, secondary, ships }
+  BinarySystem { primary, secondary, ships }
 
 -- Create a brand new homeworld for a player
 homeworld :: Player -> Star -> Star -> Ship -> BinarySystem
@@ -50,12 +58,12 @@ homeworld player a b ship =
 
 
 systemShips :: StarSystem -> ShipsAtStar
-systemShips (Single { ships }) = ships
-systemShips (Binary { ships }) = ships
+systemShips (Single (SingleSystem { ships })) = ships
+systemShips (Binary (BinarySystem { ships })) = ships
 
 systemStarColors :: StarSystem -> NonEmpty List Color
-systemStarColors (Single { star }) = singleton $ getColor star
-systemStarColors (Binary { primary, secondary }) = NonEmpty (getColor primary) (getColor secondary : Nil)
+systemStarColors (Single (SingleSystem { star })) = singleton $ getColor star
+systemStarColors (Binary (BinarySystem { primary, secondary })) = NonEmpty (getColor primary) (getColor secondary : Nil)
 
 -----------------------------------
 -- rules enforcement and validation
